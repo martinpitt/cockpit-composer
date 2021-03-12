@@ -130,7 +130,7 @@ vm: $(VM_IMAGE)
 
 # run the CDP integration test
 check: $(VM_IMAGE) test/common machine
-	test/common/run-tests --test-dir=test/verify --enable-network
+	test/common/run-tests --nondestructive-memory-mb 2048 --test-dir=test/verify --enable-network
 
 # run test with browser interactively
 debug-check:
@@ -152,9 +152,10 @@ machine: bots
 	rsync -avR --exclude="bots/machine/machine_core/__pycache__/" bots/machine/testvm.py bots/machine/identity bots/machine/cloud-init.iso bots/machine/machine_core bots/lib test
 
 # checkout Cockpit's test API; this has no API stability guarantee, so check out a stable tag
-# this needs a recent adjustment for firefox 77 and working with network-enabled tests
 test/common:
-	git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 233
+	# HACK: needs https://github.com/cockpit-project/cockpit/pull/15509 released in cockpit
+	# git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 240
+	git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 0d47a505b9a0e120b42168240bcd73660fa3a002
 	git checkout --force FETCH_HEAD -- test/common
 	git reset test/common
 
